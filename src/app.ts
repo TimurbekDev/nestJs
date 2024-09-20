@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import { MovieModule } from './modules';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { AuthorModule, MovieModule } from './modules';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { LoggerMiddleware } from './common';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -16,8 +17,15 @@ import { SequelizeModule } from '@nestjs/sequelize';
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
     autoLoadModels: true,
-    sync: { alter: true }
-  }), MovieModule],
+    sync: { alter: true, logging: false },
+    define : { timestamps : false }
+  }), MovieModule,AuthorModule],
 })
 
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+}

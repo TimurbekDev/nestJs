@@ -1,13 +1,14 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { AuthorModel } from "src/modules/author/models/author.model";
 
-export interface MovieAtribute {
+export declare interface MovieAtribute {
     name: string,
     rating: number,
-    year: number
+    year: number,
+    author_id : number
 }
 
 @Table({ tableName: 'movies' })
-
 export class MovieModel extends Model<MovieModel, MovieAtribute> {
 
     @Column({
@@ -16,7 +17,7 @@ export class MovieModel extends Model<MovieModel, MovieAtribute> {
         primaryKey: true,
         allowNull: false
     })
-    id: string;
+    id: number;
 
     @Column({
         type: DataType.STRING(100),
@@ -35,4 +36,11 @@ export class MovieModel extends Model<MovieModel, MovieAtribute> {
         allowNull: false
     })
     year: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull:false
+    })
+    @ForeignKey(()=>AuthorModel)
+    author_id : number
 }
